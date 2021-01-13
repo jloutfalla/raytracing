@@ -4,6 +4,7 @@
 
 #include "utils.h"
 #include "vec3.h"
+#include "camera.h"
 #include "ray.h"
 #include "hittable_list.h"
 #include "sphere.h"
@@ -13,12 +14,11 @@ color ray_color(const ray& r, const hittable& world);
 
 int main()
 {
-  int i, j;
-
   // Image
   const double aspect_ratio = 16.0 / 9.0;
   const int image_width = 400;
   const int image_height = int(image_width / aspect_ratio);
+  const int samples_per_pixel = 100;
 
   // World
   hittable_list world;
@@ -26,32 +26,28 @@ int main()
   world.add(std::make_shared<sphere>(point3(0, -100.5, -1), 100));
   
   // Camera
-  double viewport_height = 2.0;
-  double viewport_width = aspect_ratio * viewport_height;
-  double focal_length = 1.0;
-
-  point3 origin(0, 0, 0);
-  vec3 horizontal(viewport_width, 0, 0);
-  vec3 vertical(0, viewport_height, 0);
-  point3 lower_left_corner = (origin - horizontal / 2 -
-                              vertical / 2 - vec3(0, 0, focal_length));
+  camera cam;
 
   // Render
   printf("P3\n%d %d\n255\n", image_width, image_height);
 
-  for (j = image_height - 1; j >= 0; --j)
+  for (int j = image_height - 1; j >= 0; --j)
     {
       fprintf(stderr, "\rScanlines remainings: %d ", j);
       fflush(stderr);
-      for (i = 0; i < image_width; ++i)
+      for (int i = 0; i < image_width; ++i)
         {
-          double u = double(i) / (image_width - 1);
-          double v = double(j) / (image_height - 1);
-          ray r(origin,
-                lower_left_corner + u * horizontal + v * vertical - origin);
+          color pixel(0, 0, 0);
           
-          color pixel = ray_color(r, world);
-          write_color(stdout, pixel);
+          for (int s = 0; s < samples_per_pixel; ++s)
+            {
+              double u = (i + randomd()) / (image_width - 1);
+              double v = (j + randomd()) / (image_height - 1);
+              ray r = cam.get_ray(u, v);
+              pixel += ray_color(r, world);
+            }
+          
+          write_color(stdout, pixel, samples_per_pixel);
         }
     }
   fprintf(stderr, "\nDone\n");
