@@ -43,4 +43,58 @@ private:
 typedef vec3 point3;
 typedef vec3 color;
 
+inline std::ostream& operator<<(std::ostream& os, const vec3& v)
+{
+  return os << "(" << v.e[0] << ", " << v.e[1] << ", " << v.e[2] << ")";
+}
+
+inline vec3 operator+(const vec3& lhs, const vec3& rhs)
+{
+  return vec3(lhs.e[0] + rhs.e[0], lhs.e[1] + rhs.e[1], lhs.e[2] + rhs.e[2]);
+}
+
+inline vec3 operator-(const vec3& lhs, const vec3& rhs)
+{
+  return vec3(lhs.e[0] - rhs.e[0], lhs.e[1] - rhs.e[1], lhs.e[2] - rhs.e[2]);
+}
+
+inline vec3 operator*(const vec3& lhs, const vec3& rhs)
+{
+  return vec3(lhs.e[0] * rhs.e[0], lhs.e[1] * rhs.e[1], lhs.e[2] * rhs.e[2]);
+}
+
+inline vec3 operator*(double l, const vec3& v)
+{
+  return vec3(l * v.e[0], l * v.e[1], l * v.e[2]);
+}
+
+inline vec3 operator*(const vec3& v, double l)
+{
+  return l * v;
+}
+
+inline vec3 operator/(const vec3& v, double l)
+{
+  return (1.0 / l) * v;
+}
+  
+inline double dot(const vec3& lhs, const vec3& rhs)
+{
+  return (lhs.e[0] * rhs.e[0] +
+          lhs.e[1] * rhs.e[1] +
+          lhs.e[2] * rhs.e[2]);
+}
+
+inline vec3 cross(const vec3& lhs, const vec3& rhs)
+{
+  return vec3(lhs.e[1] * rhs.e[2] - lhs.e[2] * rhs.e[1],
+              lhs.e[2] * rhs.e[0] - lhs.e[0] * rhs.e[2],
+              lhs.e[0] * rhs.e[1] - lhs.e[1] * rhs.e[0]);
+}
+
+inline vec3 normalize(const vec3& v)
+{
+  return v / v.length();
+}
+
 #endif /* VEC3_H */
