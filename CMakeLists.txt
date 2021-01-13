@@ -13,6 +13,8 @@ project(raytracing
 
 set(SRC_FILES
   "src/main.cpp"
+  "src/vec3.cpp"
+  "src/color.cpp"
 )
 
 add_executable("${PROJECT_NAME}" "${SRC_FILES}")
