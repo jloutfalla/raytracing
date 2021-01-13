@@ -16,6 +16,8 @@ set(SRC_FILES
   "src/vec3.cpp"
   "src/color.cpp"
   "src/ray.cpp"
+  "src/sphere.cpp"
+  "src/hittable_list.cpp"
 )
 
 add_executable("${PROJECT_NAME}" "${SRC_FILES}")

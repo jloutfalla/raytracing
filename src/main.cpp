@@ -1,11 +1,15 @@
 #include <cstdio>
+#include <cmath>
+#include <memory>
 
+#include "utils.h"
 #include "vec3.h"
 #include "ray.h"
+#include "hittable_list.h"
+#include "sphere.h"
 #include "color.h"
 
-color ray_color(const ray& r);
-bool hit_sphere(const point3& center, double radius, const ray& r);
+color ray_color(const ray& r, const hittable& world);
 
 int main()
 {
@@ -16,6 +20,11 @@ int main()
   const int image_width = 400;
   const int image_height = int(image_width / aspect_ratio);
 
+  // World
+  hittable_list world;
+  world.add(std::make_shared<sphere>(point3(0, 0, -1), 0.5));
+  world.add(std::make_shared<sphere>(point3(0, -100.5, -1), 100));
+  
   // Camera
   double viewport_height = 2.0;
   double viewport_width = aspect_ratio * viewport_height;
@@ -41,7 +50,7 @@ int main()
           ray r(origin,
                 lower_left_corner + u * horizontal + v * vertical - origin);
           
-          color pixel = ray_color(r);
+          color pixel = ray_color(r, world);
           write_color(stdout, pixel);
         }
     }
@@ -50,23 +59,13 @@ int main()
   return 0;
 }
 
-color ray_color(const ray& r)
+color ray_color(const ray& r, const hittable& world)
 {
-  if (hit_sphere(point3(0, 0, -1), 0.5, r))
-    return color(1, 0, 0);
+  hit_record rec;
+  if (world.hit(r, 0, infinity, rec))
+    return 0.5 * (rec.n + color(1, 1, 1));
   
   vec3 u = normalize(r.direction());
   double t = 0.5 * (u.y() + 1.0);
   return (1.0 - t) * color(1.0, 1.0, 1.0) + t * color(0.5, 0.7, 1.0);
-}
-
-bool hit_sphere(const point3& center, double radius, const ray& r)
-{
-  vec3 oc = r.origin() - center;
-  double a = dot(r.direction(), r.direction());
-  double b = 2.0 * dot(oc, r.direction());
-  double c = dot(oc, oc) - radius * radius;
-  double discriminant = b * b - 4 * a * c;
-  
-  return discriminant > 0;
 }
