@@ -1,0 +1,7 @@
+#+TITLE: Raytracing
+#+AUTHOR: Jean-Baptiste Loutfalla
+#+LANGUAGE: en
+#+OPTIONS: toc:nil; num:nil
+
+This repository is my implementation of the raytracer from the three
+books of Perter Shirley (you can find them [[https://raytracing.github.io][here]]).
