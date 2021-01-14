@@ -10,7 +10,7 @@
 #include "sphere.h"
 #include "color.h"
 
-color ray_color(const ray& r, const hittable& world);
+color ray_color(const ray& r, const hittable& world, int depth);
 
 int main()
 {
@@ -19,6 +19,7 @@ int main()
   const int image_width = 400;
   const int image_height = int(image_width / aspect_ratio);
   const int samples_per_pixel = 100;
+  const int max_depth = 50;
 
   // World
   hittable_list world;
@@ -44,7 +45,7 @@ int main()
               double u = (i + randomd()) / (image_width - 1);
               double v = (j + randomd()) / (image_height - 1);
               ray r = cam.get_ray(u, v);
-              pixel += ray_color(r, world);
+              pixel += ray_color(r, world, max_depth);
             }
           
           write_color(stdout, pixel, samples_per_pixel);
@@ -55,11 +56,18 @@ int main()
   return 0;
 }
 
-color ray_color(const ray& r, const hittable& world)
+color ray_color(const ray& r, const hittable& world, int depth)
 {
   hit_record rec;
-  if (world.hit(r, 0, infinity, rec))
-    return 0.5 * (rec.n + color(1, 1, 1));
+
+  if (depth <= 0)
+    return color(0, 0, 0);
+  
+  if (world.hit(r, EPSILON, infinity, rec))
+    {
+      point3 target = rec.p + rec.n + random_in_hemisphere(rec.n);
+      return 0.5 * ray_color(ray(rec.p, target - rec.p), world, depth - 1);
+    }
   
   vec3 u = normalize(r.direction());
   double t = 0.5 * (u.y() + 1.0);

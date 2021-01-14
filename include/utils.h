@@ -3,15 +3,25 @@
 
 #include <cmath>
 #include <cstdlib>
+#include <ctime>
 #include <limits>
 
 const double infinity = std::numeric_limits<double>::infinity();
 const double PI = 3.1415926535897932385;
+const double EPSILON = 0.001;
 
 #define RAD(X) (X * pi / 180.0)
 
 inline double randomd()
 {
+  static bool init = true;
+
+  if (init)
+    {
+      srand(time(NULL));
+      init = false;
+    }
+  
   return rand() / (RAND_MAX + 1.0);
 }
 
